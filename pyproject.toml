@@ -1,0 +1,18 @@
+[project]
+name = "homelab-knowledge-base"
+version = "0.1.0"
+description = "A curated collection of homelab infrastructure and media stack projects for agent utilization"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "rich>=13.0.0",
+]
+
+[dependency-groups]
+dev = []
+
+[tool.ruff]
+exclude = ["repos"]
+
+[tool.ty.src]
+exclude = ["repos/"]

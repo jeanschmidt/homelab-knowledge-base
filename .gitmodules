@@ -1,0 +1,69 @@
+[submodule "repos/Lidarr"]
+	path = repos/Lidarr
+	url = https://github.com/Lidarr/Lidarr.git
+[submodule "repos/Prowlarr"]
+	path = repos/Prowlarr
+	url = https://github.com/Prowlarr/Prowlarr.git
+[submodule "repos/Radarr"]
+	path = repos/Radarr
+	url = https://github.com/Radarr/Radarr.git
+[submodule "repos/Sonarr"]
+	path = repos/Sonarr
+	url = https://github.com/Sonarr/Sonarr.git
+[submodule "repos/Tdarr"]
+	path = repos/Tdarr
+	url = https://github.com/HaveAGitGat/Tdarr.git
+[submodule "repos/ansible"]
+	path = repos/ansible
+	url = https://github.com/ansible/ansible.git
+[submodule "repos/bazarr"]
+	path = repos/bazarr
+	url = https://github.com/morpheus65535/bazarr.git
+[submodule "repos/cadvisor"]
+	path = repos/cadvisor
+	url = https://github.com/google/cadvisor.git
+[submodule "repos/compose"]
+	path = repos/compose
+	url = https://github.com/docker/compose.git
+[submodule "repos/gluetun"]
+	path = repos/gluetun
+	url = https://github.com/qdm12/gluetun.git
+[submodule "repos/grafana"]
+	path = repos/grafana
+	url = https://github.com/grafana/grafana.git
+[submodule "repos/homeassistant"]
+	path = repos/homeassistant
+	url = https://github.com/home-assistant/core.git
+[submodule "repos/loki"]
+	path = repos/loki
+	url = https://github.com/grafana/loki.git
+[submodule "repos/node_exporter"]
+	path = repos/node_exporter
+	url = https://github.com/prometheus/node_exporter.git
+[submodule "repos/ntfy"]
+	path = repos/ntfy
+	url = https://github.com/binwiederhier/ntfy.git
+[submodule "repos/opnsense-core"]
+	path = repos/opnsense-core
+	url = https://github.com/opnsense/core.git
+[submodule "repos/opnsense-plugins"]
+	path = repos/opnsense-plugins
+	url = https://github.com/opnsense/plugins.git
+[submodule "repos/pms-docker"]
+	path = repos/pms-docker
+	url = https://github.com/plexinc/pms-docker.git
+[submodule "repos/portainer"]
+	path = repos/portainer
+	url = https://github.com/portainer/portainer.git
+[submodule "repos/prometheus"]
+	path = repos/prometheus
+	url = https://github.com/prometheus/prometheus.git
+[submodule "repos/qBittorrent"]
+	path = repos/qBittorrent
+	url = https://github.com/qbittorrent/qBittorrent.git
+[submodule "repos/traefik"]
+	path = repos/traefik
+	url = https://github.com/traefik/traefik.git
+[submodule "repos/watchtower"]
+	path = repos/watchtower
+	url = https://github.com/containrrr/watchtower.git
