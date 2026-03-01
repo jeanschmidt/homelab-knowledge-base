@@ -67,3 +67,9 @@
 [submodule "repos/watchtower"]
 	path = repos/watchtower
 	url = https://github.com/containrrr/watchtower.git
+[submodule "repos/headscale"]
+	path = repos/headscale
+	url = https://github.com/juanfont/headscale.git
+[submodule "repos/no-ip"]
+	path = repos/no-ip
+	url = https://github.com/theonemule/no-ip.git
