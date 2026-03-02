@@ -105,6 +105,19 @@ ALLOWED_REPOS: list[str | tuple[str, ...]] = [
     # =========================================================================
     "HaveAGitGat/Tdarr",
     "plexinc/pms-docker",
+
+    # =========================================================================
+    # Media Stack - Jellyfin
+    # =========================================================================
+    ("jellyfin/jellyfin-web", "v10.11.6"),
+    ("jellyfin/jellyfin-ffmpeg", "v7.1.3-3"),
+    "jellyfin/jellyfin-meta",
+    ("jellyfin/jellyfin-chromecast", "v1.2.0"),
+    ("jellyfin/jellyfin-androidtv", "v0.19.7"),
+    ("jellyfin/jellyfin-ios", "v1.7.0.8"),
+    ("jellyfin/Swiftfin", "1.4"),
+    ("jellyfin/jellyfin-sdk-typescript", "v0.13.0"),
+    ("jellyfin/jellyfin-android", "v2.6.3"),
 ]
 
 

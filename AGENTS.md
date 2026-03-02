@@ -60,7 +60,18 @@ homelab-knowledge-base/
     │
     │── # Media Stack - Transcoding & Playback
     ├── Tdarr/
-    └── pms-docker/            # Plex Media Server Docker
+    ├── pms-docker/            # Plex Media Server Docker
+    │
+    │── # Media Stack - Jellyfin
+    ├── jellyfin-web/
+    ├── jellyfin-ffmpeg/
+    ├── jellyfin-meta/
+    ├── jellyfin-chromecast/
+    ├── jellyfin-androidtv/
+    ├── jellyfin-ios/
+    ├── Swiftfin/
+    ├── jellyfin-sdk-typescript/
+    └── jellyfin-android/
 ```
 
 **Note on naming:** Submodule directory names usually match the GitHub repository name. Where repos share names across orgs, custom local names are used (e.g., `homeassistant` for `home-assistant/core`, `opnsense-core` for `opnsense/core`). Check `.gitmodules` to see which org each belongs to.
@@ -405,39 +416,167 @@ Official Docker image for Plex Media Server. Serves media to clients with automa
 
 ---
 
+### Media Stack - Jellyfin
+
+#### `repos/jellyfin-web/` - Jellyfin Web Client
+**Language:** TypeScript | **Version:** v10.11.6 | **Org:** jellyfin
+
+The main web UI for Jellyfin media server. Single-page app built with Vite/Webpack.
+
+**Key paths:**
+- `src/` - Application source (components, controllers, plugins)
+
+**Relevant for:** Customizing the web client, understanding playback UI, plugin integration.
+
+---
+
+#### `repos/jellyfin-ffmpeg/` - Jellyfin FFmpeg
+**Language:** C | **Version:** v7.1.3-3 | **Org:** jellyfin
+
+Custom FFmpeg fork with Jellyfin-specific patches for hardware-accelerated transcoding (VAAPI, QSV, NVENC, V4L2, AMF).
+
+**Key paths:**
+- `debian/` - Debian packaging
+- `libavcodec/` - Codec implementations
+- `libavfilter/` - Filter implementations (tone-mapping, subtitles, etc.)
+- `docker-build.sh` - Docker-based build system
+
+**Relevant for:** Understanding hardware transcoding capabilities, codec support, build configuration for specific hardware.
+
+---
+
+#### `repos/jellyfin-meta/` - Jellyfin Meta
+**Language:** Markdown | **Tracking:** Latest | **Org:** jellyfin
+
+Organizational meta-repository containing team info, policies, procedures, and API design docs.
+
+**Key paths:**
+- `api-design/` - API design documents
+- `policies-and-procedures/` - Project governance
+
+**Relevant for:** Understanding Jellyfin API conventions and project policies.
+
+---
+
+#### `repos/jellyfin-chromecast/` - Jellyfin Chromecast
+**Language:** TypeScript | **Version:** v1.2.0 | **Org:** jellyfin
+
+Chromecast receiver app for casting media from Jellyfin clients.
+
+**Key paths:**
+- `src/` - Receiver application source
+
+**Relevant for:** Chromecast playback behavior, cast protocol integration.
+
+---
+
+#### `repos/jellyfin-androidtv/` - Jellyfin Android TV
+**Language:** Kotlin | **Version:** v0.19.7 | **Org:** jellyfin
+
+Dedicated Android TV client for Jellyfin with leanback UI.
+
+**Key paths:**
+- `app/` - Main application module
+- `playback/` - Playback engine module
+- `preference/` - Settings/preferences module
+
+**Relevant for:** Android TV playback configuration, ExoPlayer integration, leanback UI customization.
+
+---
+
+#### `repos/jellyfin-ios/` - Jellyfin iOS (React Native)
+**Language:** TypeScript (React Native) | **Version:** v1.7.0.8 | **Org:** jellyfin
+
+Legacy React Native iOS client for Jellyfin.
+
+**Key paths:**
+- `screens/` - Screen components
+- `components/` - Reusable UI components
+- `stores/` - State management
+- `ios/` - Native iOS project files
+
+**Relevant for:** Legacy iOS client behavior (see Swiftfin for the modern native client).
+
+---
+
+#### `repos/Swiftfin/` - Swiftfin
+**Language:** Swift | **Version:** 1.4 | **Org:** jellyfin
+
+Modern native Apple client for Jellyfin (iOS, iPadOS, tvOS). Replaces the older React Native client.
+
+**Key paths:**
+- `Shared/` - Shared code across platforms
+- `Swiftfin/` - iOS/iPadOS target
+- `Swiftfin tvOS/` - tvOS target
+- `PreferencesView/` - Settings UI
+
+**Relevant for:** Native Apple platform playback, VLCKit integration, multi-platform Swift architecture.
+
+---
+
+#### `repos/jellyfin-sdk-typescript/` - Jellyfin TypeScript SDK
+**Language:** TypeScript | **Version:** v0.13.0 | **Org:** jellyfin
+
+Auto-generated TypeScript/JavaScript SDK for the Jellyfin API. Used by jellyfin-web and third-party integrations.
+
+**Key paths:**
+- `src/` - Generated API client and models
+- `openapi.json` - OpenAPI spec the SDK is generated from
+
+**Relevant for:** Jellyfin API reference (the OpenAPI spec is the authoritative source), building custom integrations.
+
+---
+
+#### `repos/jellyfin-android/` - Jellyfin Android
+**Language:** Kotlin | **Version:** v2.6.3 | **Org:** jellyfin
+
+Native Android mobile client for Jellyfin.
+
+**Key paths:**
+- `app/` - Main application module
+
+**Relevant for:** Android playback configuration, ExoPlayer integration, WebView-based UI with native playback.
+
+---
+
 ## Managing Repositories
+
+See `CLAUDE.md` for the full step-by-step procedure. Summary below.
 
 ### Adding a New Repository
 
-Edit `sync.py` and add to the `ALLOWED_REPOS` list:
+All of these steps are required — do not skip any:
+
+1. **Look up latest release tag** — `gh api repos/ORG/REPO/releases/latest --jq '.tag_name'`
+2. **Add to `sync.py`** — Add entry to `ALLOWED_REPOS` in the appropriate section. Pin to latest release; use bare string if no releases exist.
+3. **Add git submodule** — `git submodule add <url> repos/<name>`
+4. **Run `uv run sync.py`** — Verifies allowlist, checks out pinned versions.
+5. **Update this file (`AGENTS.md`)** — Three places:
+   - Directory tree (under `repos/`)
+   - Repository summary (language, version, key paths, relevance)
+   - Common Tasks table (if applicable)
+6. **Verify** — `uv run sync.py --dry-run` to confirm everything is in sync.
+
+### Allowlist entry formats
 
 ```python
-ALLOWED_REPOS: list[str | tuple[str, str]] = [
-    # Existing repos...
-
-    # Track latest:
-    "org/repo-name",
-
-    # Pin to a specific version:
-    ("org/repo-name", "v1.0.0"),
-]
+"org/repo-name"                         # Track latest default branch
+("org/repo-name", "v1.0.0")            # Pin to a tag/commit
+("org/repo-name", "v1.0.0", "alias")   # Pin with custom local directory name
+("org/repo-name", None, "alias")        # Track latest with custom local directory name
 ```
 
-Then run `uv run sync.py` to sync.
-
 ### Updating to Latest Versions
-
-Check the latest release:
 
 ```bash
 gh api repos/ORG/REPO/releases/latest --jq '.tag_name'
 ```
 
-Update the version in `sync.py` and run `uv run sync.py`.
+Update the version in `sync.py`, run `uv run sync.py`, and update the version in the AGENTS.md summary.
 
 ### Removing a Repository
 
-Remove it from `ALLOWED_REPOS` in `sync.py` and run `uv run sync.py`. The submodule will be automatically cleaned up.
+Remove from `ALLOWED_REPOS` in `sync.py`, run `uv run sync.py` (handles submodule cleanup), and remove from all three places in this file (directory tree, summary, common tasks table).
 
 ---
 
@@ -461,6 +600,11 @@ Remove it from `ALLOWED_REPOS` in `sync.py` and run `uv run sync.py`. The submod
 | Configure Plex Docker | `pms-docker` | `README.md` |
 | Check HA metric naming | `homeassistant` | `homeassistant/components/prometheus/` |
 | OPNsense node_exporter setup | `opnsense-plugins` | `net-mgmt/node_exporter/` |
+| Jellyfin web UI customization | `jellyfin-web` | `src/` |
+| Jellyfin transcoding/codec support | `jellyfin-ffmpeg` | `libavcodec/`, `libavfilter/` |
+| Jellyfin API reference | `jellyfin-sdk-typescript` | `openapi.json` |
+| Jellyfin Android TV playback | `jellyfin-androidtv` | `playback/`, `app/` |
+| Jellyfin iOS/tvOS (Swiftfin) | `Swiftfin` | `Shared/`, `Swiftfin/` |
 
 ## Tips for Navigating the Codebase
 
