@@ -58,6 +58,9 @@ homelab-knowledge-base/
     ├── Lidarr/
     ├── bazarr/
     │
+    │── # Media Stack - Requests & Discovery
+    ├── seerr/
+    │
     │── # Media Stack - Transcoding & Playback
     ├── Tdarr/
     ├── pms-docker/            # Plex Media Server Docker
@@ -387,6 +390,24 @@ Subtitle manager that integrates with Sonarr and Radarr. Automatically downloads
 
 ---
 
+### Media Stack - Requests & Discovery
+
+#### `repos/seerr/` - Seerr
+**Language:** TypeScript (Next.js) | **Version:** v3.1.0 | **Org:** seerr-team
+
+Media request and discovery tool (successor to Overseerr). Lets users browse, request, and manage movies/TV shows with automatic routing to Sonarr and Radarr.
+
+**Key paths:**
+- `server/` - Backend server logic
+- `src/` - Frontend (Next.js/React)
+- `seerr-api.yml` - OpenAPI spec
+- `docs/` - Documentation
+- `config/` - Configuration files
+
+**Relevant for:** Media request workflows, Sonarr/Radarr integration, user access control, notification configuration.
+
+---
+
 ### Media Stack - Transcoding & Playback
 
 #### `repos/Tdarr/` - Tdarr
@@ -600,6 +621,7 @@ Remove from `ALLOWED_REPOS` in `sync.py`, run `uv run sync.py` (handles submodul
 | Configure Plex Docker | `pms-docker` | `README.md` |
 | Check HA metric naming | `homeassistant` | `homeassistant/components/prometheus/` |
 | OPNsense node_exporter setup | `opnsense-plugins` | `net-mgmt/node_exporter/` |
+| Manage media requests | `seerr` | `server/`, `seerr-api.yml` |
 | Jellyfin web UI customization | `jellyfin-web` | `src/` |
 | Jellyfin transcoding/codec support | `jellyfin-ffmpeg` | `libavcodec/`, `libavfilter/` |
 | Jellyfin API reference | `jellyfin-sdk-typescript` | `openapi.json` |

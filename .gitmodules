@@ -100,3 +100,6 @@
 [submodule "repos/jellyfin-android"]
 	path = repos/jellyfin-android
 	url = https://github.com/jellyfin/jellyfin-android.git
+[submodule "repos/seerr"]
+	path = repos/seerr
+	url = https://github.com/seerr-team/seerr.git
