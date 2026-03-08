@@ -106,3 +106,9 @@
 [submodule "repos/sabnzbd"]
 	path = repos/sabnzbd
 	url = https://github.com/sabnzbd/sabnzbd.git
+[submodule "repos/mosquitto"]
+	path = repos/mosquitto
+	url = https://github.com/eclipse-mosquitto/mosquitto.git
+[submodule "repos/nginx"]
+	path = repos/nginx
+	url = https://github.com/nginx/nginx.git

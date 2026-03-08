@@ -26,6 +26,7 @@ homelab-knowledge-base/
     ├── compose/
     │
     │── # Reverse Proxy
+    ├── nginx/
     ├── traefik/
     │
     │── # Container Management
@@ -34,6 +35,7 @@ homelab-knowledge-base/
     │
     │── # Home Automation
     ├── homeassistant/         # Home Assistant (home-assistant/core)
+    ├── mosquitto/             # Eclipse Mosquitto MQTT broker
     │
     │── # Monitoring Stack
     ├── prometheus/
@@ -114,6 +116,24 @@ Multi-container Docker application orchestration. All IoTBase services are deplo
 
 ### Reverse Proxy
 
+#### `repos/nginx/` - Nginx
+**Language:** C | **Version:** release-1.29.5 | **Org:** nginx
+
+High-performance HTTP server, reverse proxy, and load balancer. The reference web server used across countless deployments.
+
+**Key paths:**
+- `src/core/` - Core event loop and process management
+- `src/http/` - HTTP protocol implementation and modules
+- `src/http/modules/` - Built-in modules (proxy, upstream, ssl, rewrite, etc.)
+- `src/stream/` - TCP/UDP stream proxy modules
+- `conf/` - Default configuration files (`nginx.conf`, `mime.types`)
+- `contrib/` - Vim syntax highlighting and other contrib tools
+- `docs/` - XML documentation source
+
+**Relevant for:** Reverse proxy configuration, upstream load balancing, SSL/TLS termination, location block routing, rate limiting, caching, stream (TCP/UDP) proxying.
+
+---
+
 #### `repos/traefik/` - Traefik
 **Language:** Go | **Version:** v3.6.8 | **Org:** traefik
 
@@ -169,6 +189,25 @@ Smart home automation platform. Runs as the primary IoT controller on IoTBase, a
 - `homeassistant/components/rest/` - REST API integration
 
 **Relevant for:** Understanding entity state models, Prometheus metric naming conventions (`homeassistant_climate_*`), automation trigger/action schemas, REST API endpoints.
+
+---
+
+#### `repos/mosquitto/` - Eclipse Mosquitto
+**Language:** C | **Version:** v2.1.2 | **Org:** eclipse-mosquitto
+
+Lightweight open-source MQTT message broker. Core messaging backbone for IoT devices communicating with Home Assistant.
+
+**Key paths:**
+- `src/` - Broker daemon source code
+- `lib/` - Client library (libmosquitto)
+- `plugins/` - Authentication and access control plugins
+- `config.h` - Compile-time configuration
+- `mosquitto.conf` - Default configuration file with all options documented
+- `man/` - Man pages (mosquitto.conf.5 is the config reference)
+- `examples/` - Example client implementations
+- `docker/` - Dockerfile and Docker entrypoint
+
+**Relevant for:** MQTT broker configuration, TLS/SSL setup, authentication (password file, plugin-based), ACL rules, bridge configuration for connecting multiple brokers, WebSocket support, client library usage.
 
 ---
 
@@ -623,6 +662,7 @@ Remove from `ALLOWED_REPOS` in `sync.py`, run `uv run sync.py` (handles submodul
 |------|------------|---------------|
 | Debug Ansible module behavior | `ansible` | `lib/ansible/modules/` |
 | Understand compose file syntax | `compose` | `pkg/compose/` |
+| Configure Nginx reverse proxy | `nginx` | `conf/`, `src/http/modules/` |
 | Configure Traefik routing | `traefik` | `pkg/provider/file/`, `docs/content/routing/` |
 | Write PromQL queries | `prometheus` | `promql/`, `documentation/` |
 | Find available host metrics | `node_exporter` | `collector/` |
@@ -636,6 +676,7 @@ Remove from `ALLOWED_REPOS` in `sync.py`, run `uv run sync.py` (handles submodul
 | Understand import/move behavior | `Sonarr`/`Radarr` | `src/NzbDrone.Core/MediaFiles/EpisodeImport/` |
 | Set up transcode rules | `Tdarr` | `Tdarr_Plugins/` |
 | Configure Plex Docker | `pms-docker` | `README.md` |
+| Configure MQTT broker | `mosquitto` | `mosquitto.conf`, `plugins/` |
 | Check HA metric naming | `homeassistant` | `homeassistant/components/prometheus/` |
 | OPNsense node_exporter setup | `opnsense-plugins` | `net-mgmt/node_exporter/` |
 | Manage media requests | `seerr` | `server/`, `seerr-api.yml` |
