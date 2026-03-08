@@ -90,6 +90,7 @@ ALLOWED_REPOS: list[str | tuple[str, ...]] = [
     # =========================================================================
     ("qdm12/gluetun", "v3.41.1"),
     ("qbittorrent/qBittorrent", "release-5.1.4"),
+    ("sabnzbd/sabnzbd", "4.5.5"),
 
     # =========================================================================
     # Media Stack - Automation (*arr)

@@ -103,3 +103,6 @@
 [submodule "repos/seerr"]
 	path = repos/seerr
 	url = https://github.com/seerr-team/seerr.git
+[submodule "repos/sabnzbd"]
+	path = repos/sabnzbd
+	url = https://github.com/sabnzbd/sabnzbd.git

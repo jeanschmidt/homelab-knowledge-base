@@ -50,6 +50,7 @@ homelab-knowledge-base/
     │── # Media Stack - VPN & Downloads
     ├── gluetun/
     ├── qBittorrent/
+    ├── sabnzbd/
     │
     │── # Media Stack - Automation (*arr)
     ├── Prowlarr/
@@ -315,6 +316,21 @@ BitTorrent client with web UI. Routes all traffic through Gluetun's VPN tunnel.
 - `src/base/rss/` - RSS feed support
 
 **Relevant for:** Web API endpoints for *arr integration, configuration options, download path management.
+
+---
+
+#### `repos/sabnzbd/` - SABnzbd
+**Language:** Python | **Version:** 4.5.5 | **Org:** sabnzbd
+
+Usenet binary newsreader/downloader. Automates downloading from Usenet via NZB files, integrates with Sonarr, Radarr, and Lidarr as a download client.
+
+**Key paths:**
+- `sabnzbd/` - Main application code
+- `interfaces/` - Web UI templates
+- `SABnzbd.py` - Application entry point
+- `tests/` - Test suite
+
+**Relevant for:** Usenet download client configuration, NZB processing, *arr download client integration, category/folder mapping.
 
 ---
 
@@ -615,6 +631,7 @@ Remove from `ALLOWED_REPOS` in `sync.py`, run `uv run sync.py` (handles submodul
 | Write LogQL queries | `loki` | `pkg/logql/`, `docs/sources/` |
 | Configure Promtail scraping | `loki` | `clients/pkg/promtail/` |
 | Set up VPN provider | `gluetun` | `internal/provider/` |
+| Configure Usenet downloads | `sabnzbd` | `sabnzbd/`, `interfaces/` |
 | Configure *arr download paths | `Sonarr` | `src/NzbDrone.Core/MediaFiles/` |
 | Understand import/move behavior | `Sonarr`/`Radarr` | `src/NzbDrone.Core/MediaFiles/EpisodeImport/` |
 | Set up transcode rules | `Tdarr` | `Tdarr_Plugins/` |
