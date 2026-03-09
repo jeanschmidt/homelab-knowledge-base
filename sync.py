@@ -126,6 +126,12 @@ ALLOWED_REPOS: list[str | tuple[str, ...]] = [
     ("jellyfin/Swiftfin", "1.4"),
     ("jellyfin/jellyfin-sdk-typescript", "v0.13.0"),
     ("jellyfin/jellyfin-android", "v2.6.3"),
+
+    # =========================================================================
+    # Graph Visualization
+    # =========================================================================
+    ("pydot/pydot", "v4.0.1"),
+    ("graphp/graphviz", "v0.2.2"),
 ]
 
 

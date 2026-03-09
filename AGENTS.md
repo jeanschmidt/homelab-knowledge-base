@@ -68,6 +68,10 @@ homelab-knowledge-base/
     ├── Tdarr/
     ├── pms-docker/            # Plex Media Server Docker
     │
+    │── # Graph Visualization
+    ├── pydot/
+    ├── graphviz/
+    │
     │── # Media Stack - Jellyfin
     ├── jellyfin-web/
     ├── jellyfin-ffmpeg/
@@ -615,6 +619,40 @@ Native Android mobile client for Jellyfin.
 
 ---
 
+### Graph Visualization
+
+#### `repos/pydot/` - pydot
+**Language:** Python | **Version:** v4.0.1 | **Org:** pydot
+
+Python interface to Graphviz's DOT language. Allows creating, reading, and writing DOT graph descriptions and rendering them to images via Graphviz.
+
+**Key paths:**
+- `src/pydot/core.py` - Core graph, node, and edge classes
+- `src/pydot/dot_parser.py` - DOT language parser
+- `src/pydot/classes.py` - Graph class hierarchy
+- `src/pydot/exceptions.py` - Exception definitions
+- `test/` - Test suite
+
+**Relevant for:** Programmatically generating graph diagrams, parsing DOT files, rendering infrastructure topology or dependency visualizations.
+
+---
+
+#### `repos/graphviz/` - graphp/graphviz
+**Language:** PHP | **Version:** v0.2.2 | **Org:** graphp
+
+PHP library for reading and writing Graphviz DOT graph files and rendering them to images.
+
+**Key paths:**
+- `src/GraphViz.php` - Main GraphViz renderer (invokes `dot` binary)
+- `src/Dot.php` - DOT file format writer
+- `src/Image.php` - Image file handling
+- `examples/` - Usage examples (simple graphs, UML, HTML labels, records)
+- `tests/` - Test suite
+
+**Relevant for:** PHP-based graph visualization, generating DOT files, rendering graphs to PNG/SVG from PHP applications.
+
+---
+
 ## Managing Repositories
 
 See `CLAUDE.md` for the full step-by-step procedure. Summary below.
@@ -685,6 +723,9 @@ Remove from `ALLOWED_REPOS` in `sync.py`, run `uv run sync.py` (handles submodul
 | Jellyfin API reference | `jellyfin-sdk-typescript` | `openapi.json` |
 | Jellyfin Android TV playback | `jellyfin-androidtv` | `playback/`, `app/` |
 | Jellyfin iOS/tvOS (Swiftfin) | `Swiftfin` | `Shared/`, `Swiftfin/` |
+| Generate DOT graphs (Python) | `pydot` | `src/pydot/core.py` |
+| Parse DOT files (Python) | `pydot` | `src/pydot/dot_parser.py` |
+| Render graphs to images (PHP) | `graphviz` | `src/GraphViz.php`, `examples/` |
 
 ## Tips for Navigating the Codebase
 

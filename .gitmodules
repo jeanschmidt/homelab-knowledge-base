@@ -112,3 +112,9 @@
 [submodule "repos/nginx"]
 	path = repos/nginx
 	url = https://github.com/nginx/nginx.git
+[submodule "repos/pydot"]
+	path = repos/pydot
+	url = https://github.com/pydot/pydot.git
+[submodule "repos/graphviz"]
+	path = repos/graphviz
+	url = https://github.com/graphp/graphviz.git
