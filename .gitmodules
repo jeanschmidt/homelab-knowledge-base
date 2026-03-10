@@ -118,3 +118,6 @@
 [submodule "repos/graphviz"]
 	path = repos/graphviz
 	url = https://github.com/graphp/graphviz.git
+[submodule "repos/winix"]
+	path = repos/winix
+	url = https://github.com/iprak/winix.git

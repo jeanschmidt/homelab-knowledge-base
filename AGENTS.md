@@ -36,6 +36,7 @@ homelab-knowledge-base/
     │── # Home Automation
     ├── homeassistant/         # Home Assistant (home-assistant/core)
     ├── mosquitto/             # Eclipse Mosquitto MQTT broker
+    ├── winix/                 # Winix air purifier HA integration
     │
     │── # Monitoring Stack
     ├── prometheus/
@@ -212,6 +213,23 @@ Lightweight open-source MQTT message broker. Core messaging backbone for IoT dev
 - `docker/` - Dockerfile and Docker entrypoint
 
 **Relevant for:** MQTT broker configuration, TLS/SSL setup, authentication (password file, plugin-based), ACL rules, bridge configuration for connecting multiple brokers, WebSocket support, client library usage.
+
+---
+
+#### `repos/winix/` - Winix Air Purifier Integration
+**Language:** Python | **Version:** v1.3.1 | **Org:** iprak
+
+Home Assistant custom integration for controlling and monitoring Winix air purifiers (C545, C610, AM90, HR1000, C909, T800, etc.). Exposes fan entities with speed/preset modes, air quality sensors (AQI, PM2.5), filter life sensors, and PlasmaWave toggle.
+
+**Key paths:**
+- `custom_components/winix/` - Integration source code
+- `custom_components/winix/fan.py` - Fan entity (speed, preset modes, PlasmaWave)
+- `custom_components/winix/sensor.py` - Air quality and filter life sensors
+- `custom_components/winix/driver.py` - Winix API client driver
+- `custom_components/winix/manager.py` - Device management and polling
+- `tests/` - Test suite
+
+**Relevant for:** Winix air purifier control via Home Assistant, air quality monitoring (AQI/PM2.5), custom HA integration patterns, fan entity configuration.
 
 ---
 
@@ -715,6 +733,8 @@ Remove from `ALLOWED_REPOS` in `sync.py`, run `uv run sync.py` (handles submodul
 | Set up transcode rules | `Tdarr` | `Tdarr_Plugins/` |
 | Configure Plex Docker | `pms-docker` | `README.md` |
 | Configure MQTT broker | `mosquitto` | `mosquitto.conf`, `plugins/` |
+| Control Winix air purifiers | `winix` | `custom_components/winix/fan.py`, `custom_components/winix/driver.py` |
+| Monitor air quality (AQI/PM2.5) | `winix` | `custom_components/winix/sensor.py` |
 | Check HA metric naming | `homeassistant` | `homeassistant/components/prometheus/` |
 | OPNsense node_exporter setup | `opnsense-plugins` | `net-mgmt/node_exporter/` |
 | Manage media requests | `seerr` | `server/`, `seerr-api.yml` |

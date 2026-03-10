@@ -63,6 +63,7 @@ ALLOWED_REPOS: list[str | tuple[str, ...]] = [
     # =========================================================================
     ("home-assistant/core", "2026.2.2", "homeassistant"),
     ("eclipse-mosquitto/mosquitto", "v2.1.2"),
+    ("iprak/winix", "v1.3.1"),
 
     # =========================================================================
     # Monitoring Stack
