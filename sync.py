@@ -74,6 +74,7 @@ ALLOWED_REPOS: list[str | tuple[str, ...]] = [
     ("grafana/grafana", "v12.3.3"),
     ("grafana/loki", "v3.6.6"),               # Includes Promtail
     ("binwiederhier/ntfy", "v2.17.0"),
+    ("onedr0p/exportarr", "v2.3.0"),
 
     # =========================================================================
     # Firewall
@@ -105,6 +106,12 @@ ALLOWED_REPOS: list[str | tuple[str, ...]] = [
     ("morpheus65535/bazarr", "v1.5.5"),
 
     # =========================================================================
+    # Media Stack - Quality Profiles & Guides
+    # =========================================================================
+    ("recyclarr/recyclarr", "v8.4.0"),
+    "TRaSH-Guides/Guides",
+
+    # =========================================================================
     # Media Stack - Requests & Discovery
     # =========================================================================
     ("seerr-team/seerr", "v3.1.0"),
@@ -127,6 +134,7 @@ ALLOWED_REPOS: list[str | tuple[str, ...]] = [
     ("jellyfin/Swiftfin", "1.4"),
     ("jellyfin/jellyfin-sdk-typescript", "v0.13.0"),
     ("jellyfin/jellyfin-android", "v2.6.3"),
+    "CyferShepard/Jellystat",
 
     # =========================================================================
     # Graph Visualization

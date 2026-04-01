@@ -121,3 +121,15 @@
 [submodule "repos/winix"]
 	path = repos/winix
 	url = https://github.com/iprak/winix.git
+[submodule "repos/Jellystat"]
+	path = repos/Jellystat
+	url = https://github.com/CyferShepard/Jellystat.git
+[submodule "repos/exportarr"]
+	path = repos/exportarr
+	url = https://github.com/onedr0p/exportarr.git
+[submodule "repos/Guides"]
+	path = repos/Guides
+	url = https://github.com/TRaSH-Guides/Guides.git
+[submodule "repos/recyclarr"]
+	path = repos/recyclarr
+	url = https://github.com/recyclarr/recyclarr.git
