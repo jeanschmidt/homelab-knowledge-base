@@ -25,6 +25,9 @@ homelab-knowledge-base/
     ├── ansible/
     ├── compose/
     │
+    │── # Web Frameworks
+    ├── tornado/
+    │
     │── # Reverse Proxy
     ├── nginx/
     ├── traefik/
@@ -119,6 +122,32 @@ Multi-container Docker application orchestration. All IoTBase services are deplo
 
 ---
 
+### Web Frameworks
+
+#### `repos/tornado/` - Tornado
+**Language:** Python | **Version:** v6.5.5 | **Org:** tornadoweb
+
+Python web framework and asynchronous networking library. Provides non-blocking I/O, coroutines, WebSockets, and a built-in HTTP server/client.
+
+**Key paths:**
+- `tornado/web.py` - Request handlers, application routing, and web framework core
+- `tornado/ioloop.py` - Core I/O event loop (integrates with asyncio)
+- `tornado/httpserver.py` - Non-blocking HTTP server
+- `tornado/httpclient.py` - Async/sync HTTP client
+- `tornado/websocket.py` - WebSocket server and client implementation
+- `tornado/template.py` - Template engine
+- `tornado/gen.py` - Generator-based coroutine utilities
+- `tornado/iostream.py` - Non-blocking socket I/O wrappers
+- `tornado/tcpserver.py` - Non-blocking TCP server base class
+- `tornado/auth.py` - Third-party authentication (OAuth, OpenID)
+- `tornado/routing.py` - URL routing
+- `demos/` - Example applications (blog, chat, WebSocket, etc.)
+- `docs/` - Sphinx documentation source
+
+**Relevant for:** Async web services, WebSocket servers, non-blocking HTTP clients, event-driven networking, building lightweight API servers.
+
+---
+
 ### Reverse Proxy
 
 #### `repos/nginx/` - Nginx
@@ -140,7 +169,7 @@ High-performance HTTP server, reverse proxy, and load balancer. The reference we
 ---
 
 #### `repos/traefik/` - Traefik
-**Language:** Go | **Version:** v3.6.8 | **Org:** traefik
+**Language:** Go | **Version:** v3.6.13 | **Org:** traefik
 
 Cloud-native reverse proxy and load balancer. Handles all HTTP/HTTPS routing for the homelab using file-based dynamic configuration.
 
@@ -743,6 +772,9 @@ Remove from `ALLOWED_REPOS` in `sync.py`, run `uv run sync.py` (handles submodul
 | Jellyfin API reference | `jellyfin-sdk-typescript` | `openapi.json` |
 | Jellyfin Android TV playback | `jellyfin-androidtv` | `playback/`, `app/` |
 | Jellyfin iOS/tvOS (Swiftfin) | `Swiftfin` | `Shared/`, `Swiftfin/` |
+| Build async web services | `tornado` | `tornado/web.py`, `tornado/ioloop.py` |
+| WebSocket server/client | `tornado` | `tornado/websocket.py` |
+| Non-blocking HTTP client | `tornado` | `tornado/httpclient.py` |
 | Generate DOT graphs (Python) | `pydot` | `src/pydot/core.py` |
 | Parse DOT files (Python) | `pydot` | `src/pydot/dot_parser.py` |
 | Render graphs to images (PHP) | `graphviz` | `src/GraphViz.php`, `examples/` |

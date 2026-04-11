@@ -133,3 +133,6 @@
 [submodule "repos/recyclarr"]
 	path = repos/recyclarr
 	url = https://github.com/recyclarr/recyclarr.git
+[submodule "repos/tornado"]
+	path = repos/tornado
+	url = https://github.com/tornadoweb/tornado.git
