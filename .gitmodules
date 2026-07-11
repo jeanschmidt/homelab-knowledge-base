@@ -136,3 +136,9 @@
 [submodule "repos/tornado"]
 	path = repos/tornado
 	url = https://github.com/tornadoweb/tornado.git
+[submodule "repos/lintrunner"]
+	path = repos/lintrunner
+	url = https://github.com/suo/lintrunner.git
+[submodule "repos/lintrunner-adapters"]
+	path = repos/lintrunner-adapters
+	url = https://github.com/justinchuby/lintrunner-adapters.git
