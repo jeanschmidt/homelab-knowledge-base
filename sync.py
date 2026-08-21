@@ -58,6 +58,12 @@ ALLOWED_REPOS: list[str | tuple[str, ...]] = [
     ("tornadoweb/tornado", "v6.5.5"),
 
     # =========================================================================
+    # Databases
+    # =========================================================================
+    ("postgres/postgres", "REL_16_15"),
+    ("MagicStack/asyncpg", "v0.31.0"),
+
+    # =========================================================================
     # Reverse Proxy
     # =========================================================================
     ("nginx/nginx", "release-1.29.5"),
@@ -81,6 +87,7 @@ ALLOWED_REPOS: list[str | tuple[str, ...]] = [
     # =========================================================================
     ("prometheus/prometheus", "v3.9.1"),
     ("prometheus/node_exporter", "v1.10.2"),
+    ("prometheus/client_python", "v0.25.0"),
     ("google/cadvisor", "v0.56.2"),
     ("grafana/grafana", "v12.3.3"),
     ("grafana/loki", "v3.6.6"),               # Includes Promtail
@@ -121,6 +128,11 @@ ALLOWED_REPOS: list[str | tuple[str, ...]] = [
     # =========================================================================
     ("recyclarr/recyclarr", "v8.4.0"),
     "TRaSH-Guides/Guides",
+
+    # =========================================================================
+    # Media Stack - Authenticity / Quality Analysis
+    # =========================================================================
+    ("Guillain-RDCDE/FLAC_Detective", "v1.7.0"),
 
     # =========================================================================
     # Media Stack - Requests & Discovery

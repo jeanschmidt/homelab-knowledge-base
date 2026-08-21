@@ -142,3 +142,9 @@
 [submodule "repos/lintrunner-adapters"]
 	path = repos/lintrunner-adapters
 	url = https://github.com/justinchuby/lintrunner-adapters.git
+[submodule "repos/client_python"]
+	path = repos/client_python
+	url = https://github.com/prometheus/client_python.git
+[submodule "repos/FLAC_Detective"]
+	path = repos/FLAC_Detective
+	url = https://github.com/Guillain-RDCDE/FLAC_Detective.git

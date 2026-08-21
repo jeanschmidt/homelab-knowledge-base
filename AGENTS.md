@@ -63,6 +63,7 @@ homelab-knowledge-base/
     ├── Sonarr/
     ├── Radarr/
     ├── Lidarr/
+    ├── FLAC_Detective/        # FLAC authenticity analyzer (lossy transcode + fake hi-res)
     ├── bazarr/
     │
     │── # Media Stack - Requests & Discovery
@@ -479,6 +480,20 @@ Music automation — monitors, downloads, and organizes music. Same architecture
 - `src/Lidarr.Api.V1/` - API endpoints
 
 **Relevant for:** Music library organization, metadata handling, import behavior.
+
+---
+
+#### `repos/FLAC_Detective/` - FLAC_Detective
+**Language:** Python | **Version:** v1.7.0 | **Org:** Guillain-RDCDE
+
+Lossy-transcode and fake-hi-res detector for FLAC/ALAC/WAV. Scores each file (AUTHENTIC ≤30 / WARNING 31–54 / SUSPICIOUS 55–85 / FAKE_CERTAIN ≥86) from cutoff/bitrate/spectral rules, estimates the lossy source bitrate as a codec fingerprint, and flags bit-depth-padded fake hi-res.
+
+**Key paths:**
+- `src/flac_detective/analysis/analyzer.py` - `FLACAnalyzer.analyze_file` entry point
+- `src/flac_detective/analysis/new_scoring/constants.py` - verdict score thresholds
+- `src/flac_detective/analysis/hires.py` - fake-hi-res / bit-depth-padding detector
+
+**Relevant for:** Music library authenticity scanning (the IoTBase flac-authenticity report-only daemon); see `docs/media-stack/flac-authenticity.md`.
 
 ---
 
