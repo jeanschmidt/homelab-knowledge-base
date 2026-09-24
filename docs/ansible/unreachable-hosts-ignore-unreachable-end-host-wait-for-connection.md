@@ -11,15 +11,17 @@ raised several questions:
 - does a `wait_for_connection` + `meta: end_host` barrier drop dead hosts cleanly?
 
 The answers below come from reading ansible-core source at **v2.17.14** and comparing it with
-**v2.20.2** (`repos/ansible`). The logic is the same in both unless a difference is called out.
-Line numbers are for v2.17.14, with paths relative to `lib/ansible/`.
+**v2.20.2** (`repos/ansible`). Several behaviors differ between the two versions; each difference
+is labeled with the version it applies to. Line numbers are for v2.17.14, with paths relative to
+`lib/ansible/`.
 
 Every behavior marked "verified" was reproduced on ansible-core 2.17.14 (Python 3.10, OpenSSH
 10.3) against three kinds of host: a local-connection host, SSH to `127.0.0.1:1` (connection
 refused), and SSH to `192.0.2.1` (black hole). The ssh setting was `[ssh_connection] retries = 3`.
 
-The key experiments were run again on ansible-core 2.20.2 (Python 3.12). Exit codes and recap
-counters were identical; only the wording of some messages changed, as noted below.
+The key experiments were run again on ansible-core 2.20.2 (Python 3.12). For those experiments,
+exit codes and recap counters were identical and only some message wording changed; other
+version differences are labeled below.
 
 ## Finding
 
@@ -52,8 +54,8 @@ counters were identical; only the wording of some messages changed, as noted bel
 
 - Unreachable (2.17): `{"unreachable": true, "msg": "...", "changed": false}`. There is no
   `failed`, `rc` or `stdout` key.
-- Unreachable (2.20): the same keys plus `"exception": "(traceback unavailable)"`, and `msg` starts
-  with `Task failed: `. Still no `failed` key (`errors/__init__.py`
+- Unreachable (2.20): the same keys plus `"exception": "(traceback unavailable)"` (default
+  display_traceback), and `msg` starts with `Task failed: `. Still no `failed` key (`errors/__init__.py`
   `AnsibleConnectionFailure.omit_failed_key`). Verified.
 - Skipped by `when`: `{"changed": false, "skipped": true, "skip_reason": "Conditional result was
   False", "false_condition": <condition>}` (`executor/task_executor.py:479-483`).
@@ -70,11 +72,15 @@ counters were identical; only the wording of some messages changed, as noted bel
 - **Trap:** on an unreachable result, `is failed` is False and `is succeeded` is True. Test it
   with `is unreachable`. Verified.
 - **Trap:** a later `when: "'x' in reg.stdout"` on an unreachable or skipped result fails that
-  task with `error while evaluating conditional (...): 'dict object' has no attribute 'stdout'`.
-  `ignore_unreachable` does not cover this. Verified.
-- A delegated task templates its module args with the **original** host's variables. Validation
-  happens at `executor/task_executor.py:533`, before the switch to the delegated host's variables
-  at `:561`. So a fact that was never gathered on host H makes the task fail. That is a normal task
+  task. `ignore_unreachable` does not cover this. Verified. The message differs by version:
+  - 2.17: `The conditional check ''x' in reg.stdout' failed. The error was: error while evaluating
+    conditional ('x' in reg.stdout): 'dict object' has no attribute 'stdout'`
+  - 2.20: `Task failed: Error while evaluating conditional: object of type 'dict' has no attribute
+    'stdout'`
+- A delegated task always templates its module args with the original host's variables
+  (`post_validate`, `executor/task_executor.py:533`); the delegated host's variables (`:559-566`)
+  are used only to set up the connection. So a fact never gathered on host H makes the task fail
+  even if the delegate has it (read the delegate's facts via `hostvars[...]`). That is a normal task
   failure, not an unreachable result, whatever `ignore_unreachable` says. Verified. The message
   differs by version:
   - 2.17: `The task includes an option with an undefined variable` (`playbook/base.py:565-571`).
@@ -88,11 +94,11 @@ counters were identical; only the wording of some messages changed, as noted bel
   | Code | Meaning |
   |------|---------|
   | 0 | OK |
-  | 1 | error |
+  | 1 | error (defined, never returned; exit 1 comes from the CLI) |
   | 2 | failed hosts |
   | 4 | unreachable hosts |
   | 8 | break play (internal only) |
-  | 255 | unknown error |
+  | 255 | unknown error (internal only: has the 8 bit set, so ansible-playbook reports it as 2) |
 
 - Each play picks one code (`plugins/strategy/__init__.py:325-332`), checking in this order:
   1. any non-OK result the strategy already returned;
@@ -110,6 +116,9 @@ counters were identical; only the wording of some messages changed, as noted bel
   `:261`/`:270`). Failed and unreachable hosts are carried into later plays
   (`task_queue_manager.py:328-334`, `playbook_executor.py:172`), so they keep affecting the final
   code.
+- The code is per TQM run (per `serial` batch), and the last batch's code wins. If every host of a
+  batch ends failed or unreachable, PlaybookExecutor stops that play and all later plays
+  (`playbook_executor.py:202-207`, `:217-218`).
 - The CLI adds its own codes (`cli/__init__.py:655-698`):
 
   | Code | Meaning |
@@ -117,6 +126,7 @@ counters were identical; only the wording of some messages changed, as noted bel
   | 1 | `AnsibleError` |
   | 4 | **also** `AnsibleParserError` |
   | 5 | bad CLI options |
+  | 6 | non-UTF-8 CLI args (2.17 only) |
   | 99 | Ctrl-C |
   | 250 | unexpected exception |
 
@@ -128,8 +138,10 @@ counters were identical; only the wording of some messages changed, as noted bel
 - Added in Ansible 2.8 (`modules/meta.py:33`).
 - It sets the host's run state to COMPLETE and appends the host to `play._removed_hosts`
   (`plugins/strategy/__init__.py:1016-1025`). The host is neither failed nor unreachable, so the
-  exit code is unaffected. It also disappears from `ansible_play_hosts` and `ansible_play_batch`
-  (`vars/manager.py:502-503`).
+  exit code is unaffected — except on ansible-core < 2.18 when `end_host` runs in a `rescue`
+  section: the block's fail state is never cleared, so the run exits 2 while the recap shows
+  `failed=0 rescued=1` (ansible/ansible#83447, fixed in 2.18.0). It also disappears from
+  `ansible_play_hosts` and `ansible_play_batch` (`vars/manager.py:502-503`).
 - The effect is limited to the current play. Every play runs on a fresh `Play.copy()`, whose
   `_removed_hosts` list is empty, and only failed and unreachable hosts are carried forward. So the
   host comes back in the next play of the same run. Verified.
@@ -145,8 +157,8 @@ counters were identical; only the wording of some messages changed, as noted bel
   condition raises an error, such as an undefined variable, the whole run aborts with exit 1 and no
   recap. 2.17 prints `ERROR!`; 2.20 prints `[ERROR]: Error while evaluating conditional`. Guard the
   condition with `is defined`. Verified on both.
-- In 2.20 it goes through `PlayIterator.end_host()`, which also clears the fail state when the
-  host is ended from inside a `rescue` section.
+- Since 2.18 (so not in 2.17) it goes through `PlayIterator.end_host()`, which also clears the
+  fail state when the host is ended from inside a `rescue` section.
 
 ### 5. `wait_for_connection`
 
@@ -158,34 +170,41 @@ counters were identical; only the wording of some messages changed, as noted bel
 - No connection is attempted before the poll loop. `TRANSFERS_FILES = False` (`:36`), so
   `ActionBase.run` does not create the remote tmpdir early (`plugins/action/__init__.py:129-130`).
   Any exception inside an attempt is caught and the attempt is retried (`:54`).
-- `connect_timeout` is only passed to a connection plugin's `transport_test`, and no ansible-core
-  connection plugin implements one (`:78-94`, `:103`). **For ssh it has no effect.**
+- `connect_timeout` is only used by a connection plugin's `transport_test`, which no ansible-core
+  connection plugin implements (`:78-94`, `:103`). **It has no effect with any built-in connection
+  plugin, ssh included.**
 - For ssh, the time allowed per connection is the ssh `timeout` option: default 10, sent as
   `-o ConnectTimeout=10` (`plugins/connection/ssh.py:333-353`, `:774-779`).
 - Each attempt is a full ssh call subject to `reconnection_retries` (`[ssh_connection] retries`).
   That means `retries + 1` tries, with pauses of `2**n - 1` seconds between them (0, 1, 3, 7, 15,
-  capped at 30), and only ssh exit code 255 is retried (`ssh.py:496-555`).
+  capped at 30), and only exit code 255 (or an exception from the ssh call) is retried
+  (`ssh.py:496-555`).
 - The timeout is only checked between attempts, so the task can run past it by up to one full
-  attempt:
+  attempt plus one `sleep`:
   - Verified: `timeout: 5`, ConnectTimeout 2, retries 3, black-holed IP: elapsed 13 s.
   - With ConnectTimeout 10 and retries 3, one attempt against a black hole takes about
     4 x 10 + 4 = 44 s.
-- Inferred from code, not reproduced: the tmpdir cleanup after the loop (`:117`) sits outside the
-  `try`. Suppose one attempt managed to create a remote tmpdir (`plugins/action/__init__.py:1028-1030`
-  reuses it) and the host then went away. The task can then return **unreachable** instead of
-  failed. A barrier's condition should therefore be `is failed or is unreachable`.
+- Reproduced with a fake ssh (tmpdir creation succeeds, every later ssh call fails): because the
+  tmpdir cleanup after the loop (`:117`) sits outside the `try`, the task does not end with the
+  timeout failure. On 2.17 it returns `failed` with the raw ssh error as `msg` (TaskExecutor's
+  `finally: cleanup()` re-raises and `TaskExecutor.run` turns it into `failed`); on 2.20 it returns
+  **unreachable**. Only possible with pipelining off (the default). The barrier therefore needs
+  `ignore_unreachable: true` as well as `ignore_errors: true`, and its condition should be
+  `is failed or is unreachable`.
 - **Trap:** `failed_when: false` on the barrier sets `failed` to false, so `when: barrier is failed`
   never fires. The `msg` key is still there. Use `ignore_errors: true` instead. Verified.
 
 ### 6. Fact gathering around a barrier
 
 - Implicit gathering runs once, at play start (`executor/play_iterator.py:277-300`).
-- If it hits an ignored unreachable, the host carries on with no facts. Nothing gathers them
-  again, even after the host becomes reachable. Verified.
-- With the default `gathering = implicit`, the fact cache is not consulted.
+- If it hits an ignored unreachable, the host carries on with whatever is already in the fact
+  cache: nothing with the default in-memory cache, but possibly stale facts from an earlier run
+  with a persistent cache plugin (jsonfile, redis, ...). Only `gathering = smart` uses the cache to
+  skip gathering; `implicit` always gathers, but cached facts are still loaded as host variables.
+- Nothing gathers facts again, even after the host becomes reachable. Verified.
 - Put the pieces in this order:
   1. `gather_facts: false`;
-  2. `wait_for_connection` with `ignore_errors: true` and `register`;
+  2. `wait_for_connection` with `ignore_errors: true`, `ignore_unreachable: true` and `register`;
   3. `meta: end_host` with `when: barrier is failed or barrier is unreachable`;
   4. an explicit `ansible.builtin.setup` or `gather_facts` task.
 
@@ -195,23 +214,31 @@ counters were identical; only the wording of some messages changed, as noted bel
   - it removes **all** play hosts from the failed and unreachable lists and clears their fail
     state (`strategy/__init__.py:985-994`, `play_iterator.py:546-557`);
   - a host that was unreachable, with ignore_unreachable off, comes back into the play. Once the
-    other hosts finish, it runs the tasks it missed. Verified: exit 0, with `unreachable=1` in the
-    recap;
+    other hosts finish, it runs the tasks it missed. Verified: exit 0 with `unreachable=1` when the
+    re-run tasks don't reach the host again; if it is still down, its next connecting task makes it
+    unreachable again (exit 4). It also stays out of `ansible_play_hosts`/`ansible_play_batch`,
+    since `play._removed_hosts` is not cleared;
   - it brings hosts back; it does not drop them.
 - `meta: end_batch` (2.12) and `meta: end_play` (2.2) apply to every host. They run once, and the
   first host's `when` decides. Without `serial`, `end_batch` behaves like `end_play`.
 - `max_fail_percentage` counts only failed hosts, not unreachable ones (`linear.py:339`).
 - `any_errors_fatal` is tripped by any unreachable result, **including ignored ones**
   (`linear.py:322-332`). Every remaining host is then marked failed without any stats increment,
-  so the recap shows `failed=0` everywhere and the exit code is 2. Verified.
-- No `ansible.cfg` setting changes how unreachable hosts are handled:
-  - `ANY_ERRORS_FATAL` only sets the default for the keyword;
-  - ssh `retries` and `timeout` only change how long it takes to detect the failure.
+  so the recap shows `failed=0` everywhere and the exit code is 2 (4 if the unreachable was not
+  ignored, because 4 masks 2). The ignored case is verified.
+- `ignore_errors: true` on the tripping task exempts it from any_errors_fatal (`linear.py:167`,
+  `:184`); `ignore_unreachable` has no such exemption.
+- There is no ansible.cfg equivalent of `ignore_unreachable`: `ANY_ERRORS_FATAL` only sets the
+  keyword's default (which makes any unreachable fail the batch), ssh `retries`/`timeout` change
+  how long detection takes (retries can also absorb a transient failure), and
+  `enable_task_debugger` only adds an interactive prompt.
 - Two built-in patterns make an unreachable host leave the play without exit 4. Both give exit 0
   (verified):
   - Single probe: `ignore_unreachable`, register a cheap task such as `ping`, then `meta: end_host`
     with `when: probe is unreachable`.
-  - Polling barrier: the `wait_for_connection` pattern from section 6.
+  - Polling barrier: the `wait_for_connection` pattern from section 6 (`ignore_errors: true`,
+    `ignore_unreachable: true`, `register`, then `meta: end_host` with
+    `when: barrier is failed or barrier is unreachable`).
 
 ### 8. Cost under the linear strategy
 
